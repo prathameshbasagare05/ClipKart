@@ -16,7 +16,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // Include checkout fields customizations.
 require_once plugin_dir_path( __FILE__ ) . 'includes/checkout-fields.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/user-order-details.php';
+
 require_once plugin_dir_path( __FILE__ ) . 'admin/manage-store-menu.php';
+require_once plugin_dir_path( __FILE__ ) . 'admin/admin-customize-emails.php';
+require_once plugin_dir_path( __FILE__ ) . 'admin/admin-order-details.php';
 
 
 /**
