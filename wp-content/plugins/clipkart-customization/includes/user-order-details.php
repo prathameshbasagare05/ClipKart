@@ -18,7 +18,7 @@ function display_custom_checkout_fields_account( $order ) {
 	if ( 'local_pickup' === $delivery_method ) {
 		$pickup_store            = get_post_meta( $order_id, '_pickup_store', true );
 		$pickup_date             = get_post_meta( $order_id, '_pickup_date', true );
-		$store_address           = get_store_address_by_name( $pickup_store );
+		$store_address           = get_post_meta( $order->get_id(), '_store_address', true );
 		$delivery_method_display = 'Local Pickup';
 		?>
 		<h3><?php esc_html_e( 'Delivery Details', 'clipkart-customization' ); ?></h3>

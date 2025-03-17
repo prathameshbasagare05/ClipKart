@@ -132,13 +132,21 @@ function save_custom_checkout_fields( $order_id ) {
 	if ( ! empty( $_POST['delivery_method'] ) ) {
 		update_post_meta( $order_id, '_delivery_method', sanitize_text_field( wp_unslash( $_POST['delivery_method'] ) ) );
 	}
+
 	if ( ! empty( $_POST['pickup_store'] ) ) {
-		update_post_meta( $order_id, '_pickup_store', sanitize_text_field( wp_unslash( $_POST['pickup_store'] ) ) );
+		$pickup_store = sanitize_text_field( wp_unslash( $_POST['pickup_store'] ) );
+		update_post_meta( $order_id, '_pickup_store', $pickup_store );
+
+		// Store the store address at the time of order.
+		$store_address = get_store_address_by_name( $pickup_store );
+		update_post_meta( $order_id, '_store_address', $store_address ); // Save address in meta.
 	}
+
 	if ( ! empty( $_POST['pickup_date'] ) ) {
 		update_post_meta( $order_id, '_pickup_date', sanitize_text_field( wp_unslash( $_POST['pickup_date'] ) ) );
 	}
 }
+
 
 /**
  * Retrieve store address based on store name.
