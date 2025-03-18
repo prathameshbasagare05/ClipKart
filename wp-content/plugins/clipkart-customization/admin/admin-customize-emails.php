@@ -124,8 +124,9 @@ add_action( 'woocommerce_thankyou', 'schedule_pickup_reminder_on_order' );
  * @param int $order_id The order ID.
  */
 function send_pickup_reminder_email( $order_id ) {
-	$order = wc_get_order( $order_id );
-	if ( ! $order ) {
+	$order         = wc_get_order( $order_id );
+	$reminder_sent = get_post_meta( $order_id, '_pickup_reminder_sent', true );
+	if ( ! $order || 'completed' === $order->get_status() || $reminder_sent ) {
 		return;
 	}
 
@@ -219,6 +220,7 @@ function send_pickup_reminder_email( $order_id ) {
 	$email_content = ob_get_clean();
 
 	wp_mail( $customer_email, $email_subject, $email_content, array( 'Content-Type: text/html; charset=UTF-8' ) );
+	update_post_meta( $order_id, '_pickup_reminder_sent', 1 );
 }
 // Hook the reminder function to the scheduled event.
 add_action( 'send_pickup_reminder_email_hook', 'send_pickup_reminder_email', 10, 1 );
