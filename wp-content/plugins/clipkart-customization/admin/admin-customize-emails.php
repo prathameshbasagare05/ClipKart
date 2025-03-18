@@ -119,7 +119,7 @@ function schedule_pickup_reminder_on_order( $order_id ) {
 add_action( 'woocommerce_thankyou', 'schedule_pickup_reminder_on_order' );
 
 /**
- * Send the pickup reminder email.
+ * Send a WooCommerce-style pickup reminder email.
  *
  * @param int $order_id The order ID.
  */
@@ -135,17 +135,91 @@ function send_pickup_reminder_email( $order_id ) {
 	$customer_email = $order->get_billing_email();
 
 	// Email subject.
-	$subject_prefix = esc_html__( 'Reminder: Pickup Your Order Tomorrow - ', 'clipkart-customization' );
-	$subject        = $subject_prefix . esc_html( $pickup_date );
+	$email_subject = 'Reminder: Pickup Your Order #' . $order->get_order_number() . ' - ' . $pickup_date;
 
-	// Email message.
-	$message  = esc_html__( "Dear Customer,\n\nThis is a friendly reminder that your order is scheduled for pickup on: ", 'clipkart-customization' );
-	$message .= esc_html( $pickup_date ) . "\n\n";
-	$message .= esc_html__( 'Pickup Store: ', 'clipkart-customization' ) . esc_html( $pickup_store ) . "\n";
-	$message .= esc_html__( 'Store Address: ', 'clipkart-customization' ) . esc_html( $store_address ) . "\n\n";
-	$message .= esc_html__( 'Thank you for shopping with us!', 'clipkart-customization' );
+	// Google Maps link.
+	$map_link = 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( $store_address );
 
-	wp_mail( sanitize_email( $customer_email ), $subject, $message );
+	ob_start();
+
+	do_action( 'woocommerce_email_header', $email_subject, $order );
+	?>
+
+	<p><?php esc_html_e( 'Hi', 'clipkart-customization' ); ?> <?php echo esc_html( $order->get_billing_first_name() ); ?>,</p>
+
+	<p><?php esc_html_e( 'This is a friendly reminder that your order is ready for pickup tomorrow. Please visit the store to collect it.', 'clipkart-customization' ); ?></p>
+	<h2>
+		<?php
+		echo esc_html__( 'Order #', 'clipkart-customization' ) .
+			esc_html( $order->get_order_number() ) .
+			esc_html__( ' (', 'clipkart-customization' ) .
+			esc_html( $pickup_date ) .
+			esc_html__( ')', 'clipkart-customization' );
+		?>
+	</h2>
+
+	<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; border: 1px solid #ddd;">
+		<thead>
+			<tr>
+				<th style="padding: 10px; border: 1px solid #ddd; text-align: left;"><?php esc_html_e( 'Product', 'clipkart-customization' ); ?></th>
+				<th style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?php esc_html_e( 'Quantity', 'clipkart-customization' ); ?></th>
+				<th style="padding: 10px; border: 1px solid #ddd; text-align: right;"><?php esc_html_e( 'Price', 'clipkart-customization' ); ?></th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php foreach ( $order->get_items() as $item_id => $item ) : ?>
+				<tr>
+					<td style="padding: 10px; border: 1px solid #ddd;"><?php echo esc_html( $item->get_name() ); ?></td>
+					<td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?php echo esc_html( $item->get_quantity() ); ?></td>
+					<td style="padding: 10px; border: 1px solid #ddd; text-align: right;"><?php echo wp_kses_post( wc_price( $order->get_item_total( $item, true, true ) ) ); ?></td>
+				</tr>
+			<?php endforeach; ?>
+		</tbody>
+	</table>
+
+	<h3><?php esc_html_e( 'Delivery Details', 'clipkart-customization' ); ?></h3>
+	
+	<table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
+		<tbody>
+			<tr>
+				<th style="text-align: left; padding: 10px; border: 1px solid #ddd;"><?php esc_html_e( 'Method', 'clipkart-customization' ); ?></th>
+				<td style="padding: 10px; border: 1px solid #ddd;"><?php esc_html_e( 'Local Pickup', 'clipkart-customization' ); ?></td>
+			</tr>
+			<tr>
+				<th style="text-align: left; padding: 10px; border: 1px solid #ddd;"><?php esc_html_e( 'Pickup Store', 'clipkart-customization' ); ?></th>
+				<td style="padding: 10px; border: 1px solid #ddd;"><?php echo esc_html( $pickup_store ); ?></td>
+			</tr>
+			<tr>
+				<th style="text-align: left; padding: 10px; border: 1px solid #ddd;"><?php esc_html_e( 'Store Address', 'clipkart-customization' ); ?></th>
+				<td style="padding: 10px; border: 1px solid #ddd;"><?php echo esc_html( $store_address ); ?></td>
+			</tr>
+			<tr>
+				<th style="text-align: left; padding: 10px; border: 1px solid #ddd;"><?php esc_html_e( 'Pickup Date', 'clipkart-customization' ); ?></th>
+				<td style="padding: 10px; border: 1px solid #ddd;"><?php echo esc_html( $pickup_date ); ?></td>
+			</tr>
+			<tr>
+				<th style="text-align: left; padding: 10px; border: 1px solid #ddd;"><?php esc_html_e( 'Store Location', 'clipkart-customization' ); ?></th>
+				<td style="padding: 10px; border: 1px solid #ddd;">
+					<a href="<?php echo esc_url( $map_link ); ?>" target="_blank">
+						<?php esc_html_e( 'Store Location Map', 'clipkart-customization' ); ?>
+					</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<h3><?php esc_html_e( 'Billing Address', 'clipkart-customization' ); ?></h3>
+	<p><?php echo wp_kses_post( nl2br( $order->get_formatted_billing_address() ) ); ?></p>
+
+	<p><?php esc_html_e( 'Thank you for shopping with us!', 'clipkart-customization' ); ?></p>
+
+	<?php
+	do_action( 'woocommerce_email_footer', $order );
+
+	$email_content = ob_get_clean();
+
+	// Send email using WooCommerce email function.
+	wp_mail( $customer_email, $email_subject, $email_content, array( 'Content-Type: text/html; charset=UTF-8' ) );
 }
 // Hook the reminder function to the scheduled event.
 add_action( 'send_pickup_reminder_email_hook', 'send_pickup_reminder_email', 10, 1 );
