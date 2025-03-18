@@ -21,34 +21,3 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/user-order-details.php';
 require_once plugin_dir_path( __FILE__ ) . 'admin/manage-store-menu.php';
 require_once plugin_dir_path( __FILE__ ) . 'admin/admin-customize-emails.php';
 require_once plugin_dir_path( __FILE__ ) . 'admin/admin-order-details.php';
-
-
-/**
- * Function to display custom checkout field.
- */
-function clipkart_customization_enqueue_scripts() {
-	// Only enqueue on the checkout page (and if blocks are enabled).
-
-	/*
-	 * Commented Code.
-
-	*/
-	if ( function_exists( 'is_checkout' ) && is_checkout() ) {
-		wp_enqueue_script(
-			'pickup-date-block',
-			plugin_dir_url( __FILE__ ) . 'build/index.js',
-			array(
-				'wp-plugins',
-				'wp-element',
-				'wp-data',
-				'wp-i18n',
-				'wc-blocks-checkout',
-			),
-			'1.0.0',
-			true
-		);
-	}
-}
-
-
-add_action( 'wp_enqueue_scripts', 'clipkart_customization_enqueue_scripts' );

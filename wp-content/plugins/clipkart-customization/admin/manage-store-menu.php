@@ -2,7 +2,7 @@
 /**
  * Manage Stores Admin Page and Processing.
  *
- * @package YourThemeOrPlugin
+ * @package clipkart-customization
  */
 
 add_action( 'admin_menu', 'create_manage_stores_menu' );
@@ -11,8 +11,8 @@ add_action( 'admin_menu', 'create_manage_stores_menu' );
  */
 function create_manage_stores_menu() {
 	add_menu_page(
-		esc_html__( 'Manage Stores', 'textdomain' ), // Page Title.
-		esc_html__( 'Manage Stores', 'textdomain' ), // Menu Title.
+		esc_html__( 'Manage Stores', 'clipkart-customization' ), // Page Title.
+		esc_html__( 'Manage Stores', 'clipkart-customization' ), // Menu Title.
 		'manage_options',                           // Capability.
 		'manage_stores',                            // Menu Slug.
 		'manage_stores_page',                       // Function to display the page.
@@ -37,14 +37,14 @@ function manage_stores_page() {
 	$edit_store = ( null !== $edit_index && isset( $stores[ $edit_index ] ) ) ? $stores[ $edit_index ] : null;
 	?>
 	<div class="wrap">
-		<h1><?php esc_html_e( 'Manage Stores', 'textdomain' ); ?></h1>
+		<h1><?php esc_html_e( 'Manage Stores', 'clipkart-customization' ); ?></h1>
 		<form method="post" action="">
 			<?php wp_nonce_field( 'manage_stores_action', 'manage_stores_nonce' ); ?>
 			<input type="hidden" name="edit_index" value="<?php echo esc_attr( $edit_store ? $edit_index : '' ); ?>">
 			<table class="form-table">
 				<tr>
 					<th>
-						<label for="store_name"><?php esc_html_e( 'Store Name', 'textdomain' ); ?></label>
+						<label for="store_name"><?php esc_html_e( 'Store Name', 'clipkart-customization' ); ?></label>
 					</th>
 					<td>
 						<input type="text" id="store_name" name="store_name" value="<?php echo esc_attr( $edit_store['name'] ?? '' ); ?>" required>
@@ -52,7 +52,7 @@ function manage_stores_page() {
 				</tr>
 				<tr>
 					<th>
-						<label for="store_address"><?php esc_html_e( 'Store Address', 'textdomain' ); ?></label>
+						<label for="store_address"><?php esc_html_e( 'Store Address', 'clipkart-customization' ); ?></label>
 					</th>
 					<td>
 						<textarea id="store_address" name="store_address" required><?php echo esc_textarea( $edit_store['address'] ?? '' ); ?></textarea>
@@ -60,16 +60,16 @@ function manage_stores_page() {
 				</tr>
 			</table>
 			<?php
-			submit_button( $edit_store ? __( 'Update Store', 'textdomain' ) : __( 'Add Store', 'textdomain' ) );
+			submit_button( $edit_store ? __( 'Update Store', 'clipkart-customization' ) : __( 'Add Store', 'clipkart-customization' ) );
 			?>
 		</form>
-		<h2><?php esc_html_e( 'Existing Stores', 'textdomain' ); ?></h2>
+		<h2><?php esc_html_e( 'Existing Stores', 'clipkart-customization' ); ?></h2>
 		<table class="wp-list-table widefat fixed striped">
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Name', 'textdomain' ); ?></th>
-					<th><?php esc_html_e( 'Address', 'textdomain' ); ?></th>
-					<th><?php esc_html_e( 'Actions', 'textdomain' ); ?></th>
+					<th><?php esc_html_e( 'Name', 'clipkart-customization' ); ?></th>
+					<th><?php esc_html_e( 'Address', 'clipkart-customization' ); ?></th>
+					<th><?php esc_html_e( 'Actions', 'clipkart-customization' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -97,9 +97,9 @@ function manage_stores_page() {
 							<td><?php echo esc_html( $store['name'] ); ?></td>
 							<td><?php echo esc_html( $store['address'] ); ?></td>
 							<td>
-								<a href="<?php echo esc_url( $edit_url ); ?>"><?php esc_html_e( 'Edit', 'textdomain' ); ?></a> |
-								<a href="<?php echo esc_url( $delete_url ); ?>" onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to delete this store?', 'textdomain' ); ?>');">
-									<?php esc_html_e( 'Delete', 'textdomain' ); ?>
+								<a href="<?php echo esc_url( $edit_url ); ?>"><?php esc_html_e( 'Edit', 'clipkart-customization' ); ?></a> |
+								<a href="<?php echo esc_url( $delete_url ); ?>" onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to delete this store?', 'clipkart-customization' ); ?>');">
+									<?php esc_html_e( 'Delete', 'clipkart-customization' ); ?>
 								</a>
 							</td>
 						</tr>
@@ -108,7 +108,7 @@ function manage_stores_page() {
 				} else {
 					?>
 					<tr>
-						<td colspan="3"><?php esc_html_e( 'No stores added yet.', 'textdomain' ); ?></td>
+						<td colspan="3"><?php esc_html_e( 'No stores added yet.', 'clipkart-customization' ); ?></td>
 					</tr>
 					<?php
 				}
@@ -127,7 +127,7 @@ function handle_store_submission() {
 	if ( isset( $_POST['store_name'] ) && isset( $_POST['store_address'] ) ) {
 		// Verify nonce.
 		if ( ! isset( $_POST['manage_stores_nonce'] ) || ! wp_verify_nonce( wp_unslash( $_POST['manage_stores_nonce'] ), 'manage_stores_action' ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-			wp_die( esc_html__( 'Security check failed. Please try again.', 'textdomain' ) );
+			wp_die( esc_html__( 'Security check failed. Please try again.', 'clipkart-customization' ) );
 		}
 
 		$stores    = get_option( 'custom_stores', array() );
@@ -162,7 +162,7 @@ function handle_store_deletion() {
 		$nonce     = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
 		$delete_id = absint( wp_unslash( $_GET['delete'] ) );
 		if ( ! wp_verify_nonce( $nonce, 'manage_stores_delete_' . $delete_id ) ) {
-			wp_die( esc_html__( 'Security check failed. Please try again.', 'textdomain' ) );
+			wp_die( esc_html__( 'Security check failed. Please try again.', 'clipkart-customization' ) );
 		}
 
 		$stores = get_option( 'custom_stores', array() );

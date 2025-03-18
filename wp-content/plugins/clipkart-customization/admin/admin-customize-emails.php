@@ -218,7 +218,6 @@ function send_pickup_reminder_email( $order_id ) {
 
 	$email_content = ob_get_clean();
 
-	// Send email using WooCommerce email function.
 	wp_mail( $customer_email, $email_subject, $email_content, array( 'Content-Type: text/html; charset=UTF-8' ) );
 }
 // Hook the reminder function to the scheduled event.
